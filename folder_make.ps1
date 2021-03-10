@@ -10,24 +10,30 @@ $fol_data = Import-Csv $csv_file -Encoding UTF8
 
 # フォルダ作成
 foreach($fol_check in $fol_data){
-    $fol_Chec.name
-    if(Test-Path "$($fol_root)\$($fol_Check.name)"){
+    $fol_check.name
+    if(Test-Path "$($fol_root)\$($fol_Check.folder)"){
     }else{
-        New-Item "$($fol_root)\$($fol_Check.name)" -ItemType Directory
+        New-Item "$($fol_root)\$($fol_Check.folder)" -ItemType Directory
     }
 }
 
 # ファイルのリンクルートを作成
 $file = Get-ChildItem
 
-# mp4のショートカットリンクを作成する
-foreach($file_check in $file){
-    # 拡張子がmp4の場合、リンクパスを作る
-    if($file_check.name.contains("mp4")){
-        Write-Host "$($fol_root)\$($file_check.name)"
-        $WshShell = New-Object -ComObject WScript.Shell
-        $ShortCut = $WshShell.CreateShortcut("$($fol_root)\$($file_check.name).lnk")
-        $ShortCut.TargetPath = "$($fol_root)\$($file_check.name)"
-        $ShortCut.Save()
+# 指定した名前が含まえる場合、移動する
+foreach($fol_check in $fol_data){
+    foreach($file_check in $file){
+        $file_check.name
+        $fol_check.name
+        if(($file_check.name.contains("$($fol_check.name)")) -and ($file_check.name.contains("mp4")) ){
+            Write-Host "いました"
+            Move-Item "$($fol_root)\$($file_check.name)" "$($fol_root)\$($fol_check.name)"
+
+            # ショートカットリンクを作成する
+            $WshShell = New-Object -ComObject WScript.Shell
+            $ShortCut = $WshShell.CreateShortcut("$($fol_root)\$($file_check.name).lnk")
+            $ShortCut.TargetPath = "$($fol_root)\$($fol_check.name)\$($file_check.name)"
+            $ShortCut.Save()
+        }
     }
 }
